@@ -1,0 +1,3 @@
+rootProject.name = 'data-extract-and-transform'
+include 'data-extract', 'data-transform'
+

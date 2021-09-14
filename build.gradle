@@ -1,0 +1,62 @@
+//group 'org.wcc'
+//version '1.0'
+allprojects {
+    apply plugin: 'java'
+    group 'com.wcc'
+    version = '1.0'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+}
+subprojects {
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+        compileOnly 'org.projectlombok:lombok'
+        runtimeOnly 'org.postgresql:postgresql'
+        annotationProcessor 'org.projectlombok:lombok'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+    test {
+        useJUnitPlatform()
+    }
+}
+project(':data-extract') {
+//    apply plugin: 'java'
+}
+project(':data-transform') {
+    dependencies {
+        implementation(project(':data-extract'))
+    }
+}
+
+
+/* Copy archive jar to build directory */
+task copyJars(type: Copy) {
+    dependsOn("${project(':data-extract').name}:jar")
+    dependsOn("${project(':data-transform').name}:bootJar")
+//    subprojects.each { dependsOn("${it.name}:jar") }
+    delete "$buildDir"
+    from project(':data-transform').collect { it.tasks.withType(Jar) }
+    exclude '**-plain.jar'
+    into "$buildDir/explode"
+    def source = "${project(':data-transform').name}-${project(':data-transform').version}"
+    def replace = "${project.name}-${version}"
+    rename(source, replace)
+}
+//task explodedDist(type: Copy) {
+//    into "$buildDir/explodedDist"
+//    subprojects {
+//        from tasks.withType(War)
+//    }
+//}
+
+
+
