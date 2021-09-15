@@ -2,11 +2,13 @@ package com.wcc.dataextract;
 
 import lombok.Data;
 
+import java.time.OffsetDateTime;
+
 @Data
 public class Notice {
     private String guid;
     private String notifytype;
-    private String notifytime;
+    private OffsetDateTime notifytime;
     private int isviewed;
     private String receiverguid;
     private String notifycontent;

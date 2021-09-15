@@ -2,11 +2,13 @@ package com.wcc.dataextract;
 
 import lombok.Data;
 
+import java.time.OffsetDateTime;
+
 @Data
 public class Accountloginrecord {
     private String guid;
-    private String logintime;
+    private OffsetDateTime logintime;
     private String device_guid;
     private String account_guid;
-    private String logintimeforbackuprestore;
+    private OffsetDateTime logintimeforbackuprestore;
 }

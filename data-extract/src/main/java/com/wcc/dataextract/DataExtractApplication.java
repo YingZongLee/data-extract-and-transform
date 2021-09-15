@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -75,7 +76,7 @@ public class DataExtractApplication implements CommandLineRunner {
 					Company.builder()
 							.guid(rs.getString(1))
 							.name(rs.getString(2))
-							.name(rs.getString(3))
+							.telphone(rs.getString(3))
 							.build()
 			);
 		}, configCompanyGuid);
@@ -86,15 +87,15 @@ public class DataExtractApplication implements CommandLineRunner {
 							.email(rs.getString("email"))
 							.password(rs.getString("password"))
 							.displayname(rs.getString("displayname"))
-							.createtime(rs.getString("createtime"))
+							.createtime(rs.getObject("createtime", OffsetDateTime.class))
 							.status(rs.getString("status"))
 							.role(rs.getString("role"))
 							.exportability(rs.getInt("exportability"))
 							.boss(rs.getString("boss"))
 							.company_guid(rs.getString("company_guid"))
-							.categoryorderupdatetime(rs.getString("categoryorderupdatetime"))
-							.resigndate(rs.getString("resigndate"))
-							.inheritdate(rs.getString("inheritdate"))
+							.categoryorderupdatetime(rs.getObject("categoryorderupdatetime", OffsetDateTime.class))
+							.resigndate(rs.getObject("resigndate", OffsetDateTime.class))
+							.inheritdate(rs.getObject("inheritdate", OffsetDateTime.class))
 							.inheritedaccount(rs.getString("inheritedaccount"))
 							.secretary(rs.getInt("secretary"))
 							.printability(rs.getInt("printability"))
@@ -102,9 +103,9 @@ public class DataExtractApplication implements CommandLineRunner {
 							.contactcountinprivate(0)
 							.accounttype(rs.getString("accounttype"))
 							.accountsubscriptionstatus(rs.getString("accountsubscriptionstatus"))
-							.lastpasswordchangetime(rs.getString("lastpasswordchangetime"))
-							.lastpasswordchangetime(rs.getString("lockedissue"))
-							.lockedissue(rs.getString("lockcase"))
+							.lastpasswordchangetime(rs.getObject("lastpasswordchangetime", OffsetDateTime.class))
+							.lockedissue(rs.getString("lockedissue"))
+							.lockcase(rs.getString("lockcase"))
 							.assistantguid(rs.getString("assistantguid"))
 							.build()
 			);
@@ -122,10 +123,10 @@ public class DataExtractApplication implements CommandLineRunner {
 		jdbcTemplate.query(String.format("SELECT * FROM ACCOUNTLOGINRECORD WHERE ACCOUNT_GUID IN (%s)", nOfAccountGuid), rs -> {
 			Accountloginrecord accountloginrecord = new Accountloginrecord();
 			accountloginrecord.setGuid(rs.getString("guid"));
-			accountloginrecord.setLogintime(rs.getString("logintime"));
+			accountloginrecord.setLogintime(rs.getObject("logintime", OffsetDateTime.class));
 			accountloginrecord.setDevice_guid(rs.getString("device_guid"));
 			accountloginrecord.setAccount_guid(rs.getString("account_guid"));
-			accountloginrecord.setLogintimeforbackuprestore(rs.getString("logintimeforbackuprestore"));
+			accountloginrecord.setLogintimeforbackuprestore(rs.getObject("logintimeforbackuprestore", OffsetDateTime.class));
 			extResult.getAccountloginrecords().add(accountloginrecord);
 		});
 		jdbcTemplate.query(String.format("SELECT * FROM ACCOUNTMYCARDSETTING WHERE ACCOUNT_GUID IN (%s)", nOfAccountGuid), rs -> {
@@ -182,7 +183,7 @@ public class DataExtractApplication implements CommandLineRunner {
 			accountprivatesetting.setAsiansurnameorder(rs.getString("asiansurnameorder"));
 			accountprivatesetting.setShowownerinfo(rs.getInt("showownerinfo"));
 			accountprivatesetting.setAutoshare(rs.getInt("autoshare"));
-			accountprivatesetting.setLastnoticecountview(rs.getString("lastnoticecountview"));
+			accountprivatesetting.setLastnoticecountview(rs.getObject("lastnoticecountview", OffsetDateTime.class));
 			accountprivatesetting.setSortingorder(rs.getString("sortingorder"));
 			accountprivatesetting.setIdentificationresult(rs.getString("identificationresult"));
 			accountprivatesetting.setAccount_guid(rs.getString("account_guid"));
@@ -190,22 +191,22 @@ public class DataExtractApplication implements CommandLineRunner {
 			accountprivatesetting.setCrmexportmode(rs.getString("crmexportmode"));
 			accountprivatesetting.setUsercrmaccount(rs.getString("usercrmaccount"));
 			accountprivatesetting.setCrmlogintoken(rs.getString("crmlogintoken"));
-			accountprivatesetting.setModifytime(rs.getString("modifytime"));
-			accountprivatesetting.setCrmsynclastcompletedtimeforwct(rs.getString("crmsynclastcompletedtimeforwct"));
-			accountprivatesetting.setCrmsynclastcompletedtimeforcrm(rs.getString("crmsynclastcompletedtimeforcrm"));
-			accountprivatesetting.setLastdeeplydeletedcontacttime(rs.getString("lastdeeplydeletedcontacttime"));
+			accountprivatesetting.setModifytime(rs.getObject("modifytime", OffsetDateTime.class));
+			accountprivatesetting.setCrmsynclastcompletedtimeforwct(rs.getObject("crmsynclastcompletedtimeforwct", OffsetDateTime.class));
+			accountprivatesetting.setCrmsynclastcompletedtimeforcrm(rs.getObject("crmsynclastcompletedtimeforcrm", OffsetDateTime.class));
+			accountprivatesetting.setLastdeeplydeletedcontacttime(rs.getObject("lastdeeplydeletedcontacttime", OffsetDateTime.class));
 			accountprivatesetting.setContactservertype(rs.getString("contactservertype"));
 			accountprivatesetting.setContactserverexportmode(rs.getString("contactserverexportmode"));
 			accountprivatesetting.setExchangeauthinfo(rs.getString("exchangeauthinfo"));
 			accountprivatesetting.setOffice365authinfo(rs.getString("office365authinfo"));
-			accountprivatesetting.setContactserversynclastcompletedtimeforwct(rs.getString("contactserversynclastcompletedtimeforwct"));
-			accountprivatesetting.setContactserversynclastcompletedtimeforcontactserver(rs.getString("contactserversynclastcompletedtimeforcontactserver"));
+			accountprivatesetting.setContactserversynclastcompletedtimeforwct(rs.getObject("contactserversynclastcompletedtimeforwct", OffsetDateTime.class));
+			accountprivatesetting.setContactserversynclastcompletedtimeforcontactserver(rs.getObject("contactserversynclastcompletedtimeforcontactserver", OffsetDateTime.class));
 			accountprivatesetting.setOffice365deltalinkforsync(rs.getString("office365deltalinkforsync"));
 			accountprivatesetting.setIsaddnoteinfoafterrecog(rs.getInt("isaddnoteinfoafterrecog"));
 			accountprivatesetting.setIseditafterrecog(rs.getInt("iseditafterrecog"));
 			accountprivatesetting.setCrmcompanyassignmentoption(rs.getString("crmcompanyassignmentoption"));
-			accountprivatesetting.setLeadsynclastcompletedtimeforwct(rs.getString("leadsynclastcompletedtimeforwct"));
-			accountprivatesetting.setLeadsynclastcompletedtimeforlead(rs.getString("leadsynclastcompletedtimeforlead"));
+			accountprivatesetting.setLeadsynclastcompletedtimeforwct(rs.getObject("leadsynclastcompletedtimeforwct", OffsetDateTime.class));
+			accountprivatesetting.setLeadsynclastcompletedtimeforlead(rs.getObject("leadsynclastcompletedtimeforlead", OffsetDateTime.class));
 			extResult.getAccountprivatesettings().add(accountprivatesetting);
 		});
 		jdbcTemplate.query(String.format("SELECT * FROM ACCOUNT_SHARE_TO_ACCOUNT_ITEMS WHERE SHARE_ACCOUNT_GUID IN (%s) OR BESHARED_ACCOUNT_GUID IN (%s)", nOfAccountGuid, nOfAccountGuid), rs -> {
@@ -233,7 +234,7 @@ public class DataExtractApplication implements CommandLineRunner {
 			forgetpasswordsession.setGuid(rs.getString("guid"));
 			forgetpasswordsession.setEmail(rs.getString("email"));
 			forgetpasswordsession.setToken(rs.getString("token"));
-			forgetpasswordsession.setCreatedate(rs.getString("createdate"));
+			forgetpasswordsession.setCreatedate(rs.getObject("createdate", OffsetDateTime.class));
 			extResult.getForgetpasswordsessions().add(forgetpasswordsession);
 		});
 		jdbcTemplate.query("SELECT * FROM GLOBALINFOCOMPANY WHERE COMPANYGUID=?", rs -> {
@@ -248,7 +249,7 @@ public class DataExtractApplication implements CommandLineRunner {
 			Loginfailedinfo loginfailedinfo = new Loginfailedinfo();
 			loginfailedinfo.setGuid(rs.getString("guid"));
 			loginfailedinfo.setIpaddress(rs.getString("ipaddress"));
-			loginfailedinfo.setLastfailuretime(rs.getString("lastfailuretime"));
+			loginfailedinfo.setLastfailuretime(rs.getObject("lastfailuretime", OffsetDateTime.class));
 			loginfailedinfo.setUseraccount(rs.getString("useraccount"));
 			loginfailedinfo.setFailurecount(rs.getInt("failurecount"));
 			loginfailedinfo.setFailuretype(rs.getString("failuretype"));
@@ -258,7 +259,7 @@ public class DataExtractApplication implements CommandLineRunner {
 			Notice notice = new Notice();
 			notice.setGuid(rs.getString("guid"));
 			notice.setNotifytype(rs.getString("notifytype"));
-			notice.setNotifytime(rs.getString("notifytime"));
+			notice.setNotifytime(rs.getObject("notifytime", OffsetDateTime.class));
 			notice.setIsviewed(rs.getInt("isviewed"));
 			notice.setReceiverguid(rs.getString("receiverguid"));
 			notice.setNotifycontent(rs.getString("notifycontent"));
@@ -281,9 +282,9 @@ public class DataExtractApplication implements CommandLineRunner {
 			Token token = new Token();
 			token.setToken(rs.getString("token"));
 			token.setUserguid(rs.getString("userguid"));
-			token.setCreatedtime(rs.getString("createdtime"));
-			token.setExpiredtime(rs.getString("expiredtime"));
-			token.setInvalidtime(rs.getString("invalidtime"));
+			token.setCreatedtime(rs.getObject("createdtime", OffsetDateTime.class));
+			token.setExpiredtime(rs.getObject("expiredtime", OffsetDateTime.class));
+			token.setInvalidtime(rs.getObject("invalidtime", OffsetDateTime.class));
 			token.setIp(rs.getString("ip"));
 			token.setDeviceid(rs.getString("deviceid"));
 			token.setPlatform(rs.getString("platform"));

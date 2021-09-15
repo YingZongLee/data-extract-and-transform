@@ -1,5 +1,3 @@
-//group 'org.wcc'
-//version '1.0'
 allprojects {
     apply plugin: 'java'
     group 'com.wcc'
@@ -19,6 +17,7 @@ subprojects {
     }
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+        implementation 'com.google.code.gson:gson'
         compileOnly 'org.projectlombok:lombok'
         runtimeOnly 'org.postgresql:postgresql'
         annotationProcessor 'org.projectlombok:lombok'

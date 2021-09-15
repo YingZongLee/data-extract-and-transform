@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.OffsetDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -12,15 +14,15 @@ public class Account {
     private String email;
     private String password;
     private String displayname;
-    private String createtime;
+    private OffsetDateTime createtime;
     private String status;
     private String role;
     private int exportability;
     private String boss;
     private String company_guid;
-    private String categoryorderupdatetime;
-    private String resigndate;
-    private String inheritdate;
+    private OffsetDateTime categoryorderupdatetime;
+    private OffsetDateTime resigndate;
+    private OffsetDateTime inheritdate;
     private String inheritedaccount;
     private int secretary;
     private int printability;
@@ -28,7 +30,7 @@ public class Account {
     private int contactcountinprivate;
     private String accounttype;
     private String accountsubscriptionstatus;
-    private String lastpasswordchangetime;
+    private OffsetDateTime lastpasswordchangetime;
     private String lockedissue;
     private String lockcase;
     private String assistantguid;

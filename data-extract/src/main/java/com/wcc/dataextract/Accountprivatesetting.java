@@ -2,6 +2,8 @@ package com.wcc.dataextract;
 
 import lombok.Data;
 
+import java.time.OffsetDateTime;
+
 @Data
 public class Accountprivatesetting {
     private String guid;
@@ -10,7 +12,7 @@ public class Accountprivatesetting {
     private String asiansurnameorder;
     private int showownerinfo;
     private int autoshare;
-    private String lastnoticecountview;
+    private OffsetDateTime lastnoticecountview;
     private String sortingorder;
     private String identificationresult;
     private String account_guid;
@@ -18,20 +20,20 @@ public class Accountprivatesetting {
     private String crmexportmode;
     private String usercrmaccount;
     private String crmlogintoken;
-    private String modifytime;
-    private String crmsynclastcompletedtimeforwct;
-    private String crmsynclastcompletedtimeforcrm;
-    private String lastdeeplydeletedcontacttime;
+    private OffsetDateTime modifytime;
+    private OffsetDateTime crmsynclastcompletedtimeforwct;
+    private OffsetDateTime crmsynclastcompletedtimeforcrm;
+    private OffsetDateTime lastdeeplydeletedcontacttime;
     private String contactservertype;
     private String contactserverexportmode;
     private String exchangeauthinfo;
     private String office365authinfo;
-    private String contactserversynclastcompletedtimeforwct;
-    private String contactserversynclastcompletedtimeforcontactserver;
+    private OffsetDateTime contactserversynclastcompletedtimeforwct;
+    private OffsetDateTime contactserversynclastcompletedtimeforcontactserver;
     private String office365deltalinkforsync;
     private int isaddnoteinfoafterrecog;
     private int iseditafterrecog;
     private String crmcompanyassignmentoption;
-    private String leadsynclastcompletedtimeforwct;
-    private String leadsynclastcompletedtimeforlead;
+    private OffsetDateTime leadsynclastcompletedtimeforwct;
+    private OffsetDateTime leadsynclastcompletedtimeforlead;
 }
