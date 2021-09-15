@@ -1,6 +1,5 @@
-package com.penpower.worldcard.team.mongo.document;
+package com.wcc.datatransform;
 
-import com.penpower.worldcard.team.enums.RecognizeSourceType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -9,6 +8,6 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class BaseOrderDocument extends BaseIdDocument {
-    private RecognizeSourceType recognizeSource;
+    private String recognizeSource;
     private Integer fieldOrder;
 }

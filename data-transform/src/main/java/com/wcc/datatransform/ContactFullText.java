@@ -1,4 +1,4 @@
-package com.penpower.worldcard.team.mongo.document;
+package com.wcc.datatransform;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

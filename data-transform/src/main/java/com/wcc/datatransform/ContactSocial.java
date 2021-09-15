@@ -1,10 +1,10 @@
-package com.penpower.worldcard.team.mongo.document;
+package com.wcc.datatransform;
 
-import com.penpower.worldcard.team.enums.ContactSocialType;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
@@ -12,6 +12,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @TypeAlias("social")
 @Data
 public class ContactSocial extends BaseOrderDocument {
-    private ContactSocialType socialType;
+    private String socialType;
     private String socialValue;
 }

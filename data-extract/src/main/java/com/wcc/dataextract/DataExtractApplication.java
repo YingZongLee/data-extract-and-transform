@@ -300,7 +300,7 @@ public class DataExtractApplication implements CommandLineRunner {
 			category.setDisplayorder(rs.getInt("displayorder"));
 			category.setContactcount(rs.getInt("contactcount"));
 			category.setOwnerguid(rs.getString("ownerguid"));
-			category.setUpdatetime(rs.getString("updatetime"));
+			category.setUpdatetime(rs.getObject("updatetime", OffsetDateTime.class));
 			category.setIsdeleted(rs.getInt("isdeleted"));
 			category.setSecretary_account_guid(rs.getString("secretary_account_guid"));
 			category.setInheritecategoryguid(rs.getString("inheritecategoryguid"));

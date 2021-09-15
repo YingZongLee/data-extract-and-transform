@@ -1,7 +1,8 @@
-package com.penpower.worldcard.team.mongo.document;
+package com.wcc.datatransform;
 
-import com.penpower.worldcard.team.enums.ContactIMType;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,6 +12,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @TypeAlias("ims")
 @Data
 public class ContactIms extends BaseOrderDocument {
-    private ContactIMType imType;
+    private String imType;
     private String imValue;
 }

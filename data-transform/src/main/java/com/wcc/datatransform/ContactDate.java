@@ -1,10 +1,12 @@
-package com.penpower.worldcard.team.mongo.document;
+package com.wcc.datatransform;
 
-import com.penpower.worldcard.team.enums.ContactDateType;
-import lombok.*;
-import org.joda.time.DateTime;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.OffsetDateTime;
 
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
@@ -12,6 +14,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @TypeAlias("date")
 @Data
 public class ContactDate extends BaseOrderDocument {
-    private ContactDateType dateType;
-    private DateTime dateValue;
+    private String dateType;
+    private OffsetDateTime dateValue;
 }

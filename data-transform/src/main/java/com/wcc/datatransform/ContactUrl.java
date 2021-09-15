@@ -1,7 +1,8 @@
-package com.penpower.worldcard.team.mongo.document;
+package com.wcc.datatransform;
 
-import com.penpower.worldcard.team.enums.ContactUrlType;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,6 +12,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @TypeAlias("url")
 @Data
 public class ContactUrl extends BaseOrderDocument {
-    private ContactUrlType urlType;
+    private String urlType;
     private String urlValue;
 }

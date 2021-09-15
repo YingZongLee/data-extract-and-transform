@@ -9,6 +9,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -24,6 +27,9 @@ import java.nio.file.Paths;
 import java.sql.Types;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.springframework.data.mongodb.core.aggregation.Fields.UNDERSCORE_ID;
+import static org.springframework.data.mongodb.core.query.Query.query;
 
 @Slf4j
 @SpringBootApplication
@@ -84,7 +90,20 @@ public class DataTransformApplication implements CommandLineRunner {
 
 	private void updateCategory(List<Category> categories) {
 		for(Category category : categories) {
-
+			Query query = query(Criteria.where(UNDERSCORE_ID).is(category.getGuid()));
+			Update upd = new Update();
+			upd.set("name", category.getName());
+			upd.set("categoryType", category.getCategorytype());
+			upd.set("displayOrder", category.getDisplayorder());
+			upd.set("contactCount", category.getContactcount());
+			upd.set("ownerGuid", category.getOwnerguid());
+			upd.set("updateTime", category.getUpdatetime());
+			upd.set("isDeleted", toBool(category.getIsdeleted()));
+			upd.set("secretaryAccountGuid", category.getSecretary_account_guid());
+			upd.set("inheritCategoryGuid", category.getInheritecategoryguid());
+			upd.set("parentCategoryGuid", category.getParentcategoryguid());
+			upd.set("isUsual", toBool(category.getIsusual()));
+			mongoTemplate.upsert(query, upd, CategoryDocument.class);
 		}
 	}
 
@@ -633,6 +652,10 @@ public class DataTransformApplication implements CommandLineRunner {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	private static Boolean toBool(int intValue) {
+		return intValue == 1;
 	}
 
 	private void testPSQL() {
