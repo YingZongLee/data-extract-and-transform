@@ -31,5 +31,5 @@ public class ExportResult {
     @Builder.Default private List<Picklistcontent> picklistcontents = new LinkedList<>();
     @Builder.Default private List<Token> tokens = new LinkedList<>();
     @Builder.Default private List<Category> categories = new LinkedList<>();
-    private int contactCount;
+    private int contactPage;
 }

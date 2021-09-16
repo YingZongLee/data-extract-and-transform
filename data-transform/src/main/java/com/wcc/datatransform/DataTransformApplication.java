@@ -2,6 +2,7 @@ package com.wcc.datatransform;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.wcc.dataextract.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Types;
+import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,7 +38,6 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 @SpringBootApplication
 public class DataTransformApplication implements CommandLineRunner {
 
-	private final String filename = "export.json";
 	private Gson gson;
 
 	@Autowired
@@ -57,6 +59,7 @@ public class DataTransformApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		String directory = Arrays.stream(args).findFirst().orElseThrow(() -> new NullPointerException("Directory not found."));
 		System.out.println("dataSource: " + jdbcTemplate.getDataSource().getConnection().getMetaData().getURL());
+		String filename = "export.json";
 		try(Reader reader = Files.newBufferedReader(Paths.get(directory).resolve(filename))) {
 			ExportResult result = gson.fromJson(reader, ExportResult.class);
 			updateDevice(result.getDevice());
@@ -78,6 +81,7 @@ public class DataTransformApplication implements CommandLineRunner {
 			updateNotices(result.getNotices());
 			updateTokens(result.getTokens());
 			updateCategory(result.getCategories());
+			updateContact(Paths.get(directory), result.getContactPage());
 		}
 		catch (Exception e) {
 //			StackTraceElement[] stackTrace = e.getStackTrace();
@@ -86,6 +90,293 @@ public class DataTransformApplication implements CommandLineRunner {
 			throw e;
 //			e.printStackTrace();
 		}
+	}
+
+	private void updateContact(Path directory, int contactPage) throws IOException {
+		for(int i = 0 ; i < contactPage ; i++) {
+			Path fileOfContact = directory.resolve(String.format("%s.json", i));
+			log.info("fileOfContact {}", fileOfContact);
+			try(Reader reader = Files.newBufferedReader(fileOfContact)) {
+				List<Contact> result = gson.fromJson(reader, new TypeToken<ArrayList<Contact>>() {}.getType());
+				for(Contact contact : result) {
+					Integer frontLang = Integer.valueOf(contact.getRecoglanguagefront());
+					Integer rearLang = Integer.valueOf(contact.getRecoglanguageback());
+					Query query = query(Criteria.where(UNDERSCORE_ID).is(contact.getGuid()));
+					Update upd = new Update();
+					upd.set("birthday", nonNullInstant(contact.getBirthday()));
+					upd.set("nickname", contact.getNickname());
+					upd.set("note", contact.getNote());
+					upd.set("uniformNumber", contact.getUniformnumber());
+					upd.set("textSha1", contact.getTextsha1());
+					upd.set("creatorGuid", contact.getCreatorguid());
+					upd.set("companyGuid", contact.getCompanyguid());
+					upd.set("editorGuid", contact.getEditorguid());
+					upd.set("ownerGuid", contact.getOwnerguid());
+					upd.set("recogLanguageFront", frontLang);
+					upd.set("recogLanguageBack", rearLang);
+					upd.set("isCorrected", toBool(contact.getIscorrected()));
+					upd.set("isDeleted", toBool(contact.getIsdeleted()));
+					upd.set("isVertify", toBool(contact.getIsvertify()));
+					upd.set("isUnCategory", Boolean.FALSE);
+					upd.set("createTime", nonNullInstant(contact.getCreatetime()));
+					upd.set("modifyTime", nonNullInstant(contact.getModifytime()));
+					upd.set("modifyTimeForDisplay", nonNullInstant(contact.getModifytimefordisplay()));
+					upd.set("modifyTimeForCrmSync", nonNullInstant(contact.getModifytimeforcrmsync()));
+					upd.set("modifyTimeForContactServerSync", nonNullInstant(contact.getModifytimeforcontactserversync()));
+					upd.set("modifyTimeForSearch", Long.valueOf(contact.getModifytimeforsearch()).doubleValue());
+					upd.set("modifyTimeInSearch", Long.valueOf(contact.getModifytimeinsearch()).doubleValue());
+					upd.set("accountsCanViewSha1", contact.getAccountscanviewsha1());
+					upd.set("accountsCanViews", contact.getViewers());
+					upd.set("jobInfos", transformJob(contact.getContactjobinfos()));
+					upd.set("fullText", contact.getFulltext());
+					upd.set("simpleInfo", transform(contact.getSimpleInfo()));
+					upd.set("categories", contact.getCategories());
+					upd.set("names", transformName(contact.getContactnames()));
+					upd.set("addresses", transformAddr(contact.getContactaddress()));
+					upd.set("dates", transformDate(contact.getContactdates()));
+					upd.set("simpleImages", tranformImage(contact.getContactimages(), frontLang, rearLang));
+					upd.set("phones", transformPhone(contact.getContactphones()));
+					upd.set("emails", transformEmail(contact.getContactemails()));
+					upd.set("ims", transformIms(contact.getContactims()));
+					upd.set("urls", transformUrl(contact.getContacturls()));
+					upd.set("socials", transformSocial(contact.getContactsocials()));
+					upd.set("custom", transformCustom(contact.getContactcustomdata()));
+					upd.set("status", contact.getStatus());
+					updateImages(directory, contact.getContactimages());
+					updateStatus(contact.getStatusDetail());
+					mongoTemplate.upsert(query, upd, ContactDocument.class);
+				}
+			}
+		}
+		System.out.println("updateContact finish....");
+	}
+
+	private void updateImages(Path directory, List<Contactimage> images) {
+		for(Contactimage image : images) {
+			log.debug("image data {}", image.getContentdatapath());
+			Query query = query(Criteria.where(UNDERSCORE_ID).is(image.getGuid()));
+			Update upd = new Update();
+			upd.set("sha1", image.getSha1());
+			upd.set("imageType", image.getImagetype());
+			upd.set("isDeleted", image.getIsdeleted());
+			upd.set("createTime", nonNullInstant(image.getCreatetime()));
+			upd.set("updateTime", nonNullInstant(image.getUpdatetime()));
+			upd.set("contentData", toByteArray(directory.resolve(image.getContentdatapath())));
+			mongoTemplate.upsert(query, upd, ContactImageDocument.class);
+		}
+	}
+
+	private void updateStatus(List<Contactstatusforaccount> statusDetail) {
+		for(Contactstatusforaccount status : statusDetail) {
+			Query query = query(Criteria.where(UNDERSCORE_ID).is(status.getGuid()));
+			Update upd = new Update();
+			upd.set("accountGuid", status.getAccountguid());
+			upd.set("contactGuid", status.getContactguid());
+			upd.set("isDeletedFromAccount", status.getIsdeletedfromaccount());
+			upd.set("categories", status.getCategoryguids());
+			upd.set("categorySha1", status.getCategorysha1());
+			upd.set("modifyTimeForCrmSync", nonNullInstant(status.getModifyTimeForCrmSync()));
+			upd.set("salesforceAccount", status.getSalesforceaccount());
+			upd.set("exportToSFContactId", status.getExporttosalesforceid());
+			upd.set("previousModifiedTimeForSFContact", nonNullInstant(status.getPreviousModifiedTimeForSalesforceContact()));
+			upd.set("exportToSFLeadId", status.getExporttosalesforceleadid());
+			upd.set("previousModifiedTimeForSFLead", nonNullInstant(status.getPreviousModifiedTimeForSalesforceLead()));
+			upd.set("sugarCrmAccount", status.getSugarcrmaccount());
+			upd.set("exportToSugarCrmId", status.getExporttosugarcrmid());
+			upd.set("modifyTimeForContactServerSync", nonNullInstant(status.getModifyTimeForContactServerSync()));
+			upd.set("exchangeAccount", status.getExchangeaccount());
+			upd.set("exportToExchangeId", status.getExporttoexchangeid());
+			upd.set("previousModifiedTimeForExchange", nonNullInstant(status.getPreviousModifiedTimeForExchange()));
+			upd.set("office365Account", status.getOffice365account());
+			upd.set("exportToOffice365Id", status.getExporttooffice365id());
+			upd.set("previousModifiedTimeForOffice365", status.getPreviousModifiedTimeForOffice365());
+			upd.set("statusUpdateTime", nonNullInstant(status.getStatusupdatetime()));
+			upd.set("crmExportFailedReason", status.getCrmexportfailedreason());
+			mongoTemplate.upsert(query, upd, ContactStatusForAccountDocument.class);
+		}
+	}
+
+	private List<ContactCustom> transformCustom(List<Contactcustomdata> infos) {
+		List<ContactCustom> docs = new ArrayList<>();
+		for(Contactcustomdata info : infos) {
+			ContactCustom doc = new ContactCustom();
+			doc.setGuid(info.getGuid());
+			doc.setFieldType(info.getFieldtype());
+			doc.setTextValue(info.getTextvalue());
+			doc.setIntValue(info.getIntvalue());
+			doc.setFloatValue(info.getFloatvalue());
+			doc.setDateTimeValue(nonNullInstant(info.getDatetimevalue()));
+			doc.setFieldSettingGuid(info.getFieldsettingguid());
+			docs.add(doc);
+		}
+		return docs;
+	}
+
+	private List<ContactSocial> transformSocial(List<Contactsocial> infos) {
+		List<ContactSocial> docs = new ArrayList<>();
+		for(Contactsocial info : infos) {
+			ContactSocial doc = new ContactSocial();
+			doc.setGuid(info.getGuid());
+			doc.setRecognizeSource(info.getRecognizesource());
+			doc.setFieldOrder(info.getFieldorder());
+			doc.setSocialType(info.getSocialtype());
+			doc.setSocialValue(info.getSocialvalue());
+			docs.add(doc);
+		}
+		return docs;
+	}
+
+	private List<ContactUrl> transformUrl(List<Contacturl> infos) {
+		List<ContactUrl> docs = new ArrayList<>();
+		for(Contacturl info : infos) {
+			ContactUrl doc = new ContactUrl();
+			doc.setGuid(info.getGuid());
+			doc.setRecognizeSource(info.getRecognizesource());
+			doc.setFieldOrder(info.getFieldorder());
+			doc.setUrlType(info.getUrltype());
+			doc.setUrlValue(info.getUrlvalue());
+			docs.add(doc);
+		}
+		return docs;
+	}
+
+	private List<ContactIms> transformIms(List<Contactim> infos) {
+		List<ContactIms> docs = new ArrayList<>();
+		for(Contactim info : infos) {
+			ContactIms doc = new ContactIms();
+			doc.setGuid(info.getGuid());
+			doc.setRecognizeSource(info.getRecognizesource());
+			doc.setFieldOrder(info.getFieldorder());
+			doc.setImType(info.getImtype());
+			doc.setImValue(info.getImvalue());
+			docs.add(doc);
+		}
+		return docs;
+	}
+
+	private List<ContactEmail> transformEmail(List<Contactemail> infos) {
+		List<ContactEmail> docs = new ArrayList<>();
+		for(Contactemail info : infos) {
+			ContactEmail doc = new ContactEmail();
+			doc.setGuid(info.getGuid());
+			doc.setRecognizeSource(info.getRecognizesource());
+			doc.setFieldOrder(info.getFieldorder());
+			doc.setEmailType(info.getEmailtype());
+			doc.setEmailValue(info.getEmailValue());
+			docs.add(doc);
+		}
+		return docs;
+	}
+
+	private List<ContactPhone> transformPhone(List<Contactphone> infos) {
+		List<ContactPhone> docs = new ArrayList<>();
+		for(Contactphone info : infos) {
+			ContactPhone doc = new ContactPhone();
+			doc.setGuid(info.getGuid());
+			doc.setRecognizeSource(info.getRecognizesource());
+			doc.setFieldOrder(info.getFieldorder());
+			doc.setPhoneType(info.getPhonetype());
+			doc.setPhoneValue(info.getPhonevalue());
+			docs.add(doc);
+		}
+		return docs;
+	}
+
+	private List<ContactSimpleImage> tranformImage(List<Contactimage> infos, Integer frontLang, Integer rearLang) {
+		List<ContactSimpleImage> docs = new ArrayList<>();
+		for(Contactimage info : infos) {
+			ContactSimpleImage doc = new ContactSimpleImage();
+			doc.setGuid(info.getGuid());
+			doc.setImageType(info.getImagetype());
+			if("FRONT".equals(info.getImagetype())) {
+				doc.setRecognizeLang(frontLang);
+			}
+			else if("REAR".equals(info.getImagetype())) {
+				doc.setRecognizeLang(rearLang);
+			}
+			docs.add(doc);
+		}
+		return docs;
+	}
+
+	private List<ContactDate> transformDate(List<Contactdate> infos) {
+		List<ContactDate> docs = new ArrayList<>();
+		for(Contactdate info : infos) {
+			ContactDate doc = new ContactDate();
+			doc.setGuid(info.getGuid());
+			doc.setFieldOrder(info.getFieldorder());
+			doc.setDateType(info.getDatetype());
+			doc.setDateValue(nonNullInstant(info.getDatevalue()));
+			docs.add(doc);
+		}
+		return docs;
+	}
+
+	private List<ContactAddress> transformAddr(List<Contactaddress> infos) {
+		List<ContactAddress> docs = new ArrayList<>();
+		for(Contactaddress info : infos) {
+			ContactAddress doc = new ContactAddress();
+			doc.setGuid(info.getGuid());
+			doc.setRecognizeSource(info.getRecognizesource());
+			doc.setFieldOrder(info.getFieldorder());
+			doc.setCountryCode(info.getCountrycode());
+			doc.setCountryName(info.getCountryname());
+			doc.setStreet(info.getStreet());
+			doc.setCity(info.getCity());
+			doc.setState(info.getState());
+			doc.setZip(info.getZip());
+			doc.setAddressFormat(info.getAddressformat());
+			doc.setAddressType(info.getAddresstype());
+			docs.add(doc);
+		}
+		return docs;
+	}
+	private List<ContactName> transformName(List<Contactname> infos) {
+		List<ContactName> docs = new ArrayList<>();
+		for(Contactname info : infos) {
+			ContactName doc = new ContactName();
+			doc.setGuid(info.getGuid());
+			doc.setRecognizeSource(info.getRecognizesource());
+			doc.setFieldOrder(info.getFieldorder());
+			doc.setFirstName(info.getFirstname());
+			doc.setFirstNamePronounce(info.getFirstnamepronunce());
+			doc.setLastName(info.getLastname());
+			doc.setLastNamePronounce(info.getFirstnamepronunce());
+			doc.setMiddleName(info.getMiddlename());
+			doc.setPrefix(info.getPrefix());
+			doc.setSuffix(info.getSuffix());
+			docs.add(doc);
+		}
+		return docs;
+	}
+
+	private ContactSimpleInfo transform(Contactsimpleinfo info) {
+		ContactSimpleInfo doc = new ContactSimpleInfo();
+		doc.setGuid(info.getGuid());
+		doc.setFullNameEastFirstWestFirst(info.getFullnameeastfirstwestfirst());
+		doc.setFullNameEastFirstWestLast(info.getFullnameeastfirstwestlast());
+		doc.setFullNameEastLastWestFirst(info.getFullnameeastlastwestfirst());
+		doc.setFullNameEastLastWestLast(info.getFullnameeastlastwestlast());
+		doc.setCompany(info.getCompany());
+		doc.setDepartment(info.getDepartment());
+		doc.setJobTitle(info.getJobtitle());
+		doc.setCreateTime(nonNullInstant(info.getCreatetime()));
+		return doc;
+	}
+	private List<ContactJobInfo> transformJob(List<Contactjobinfo> infos) {
+		List<ContactJobInfo> docs = new ArrayList<>();
+		for(Contactjobinfo info : infos) {
+			ContactJobInfo doc = new ContactJobInfo();
+			doc.setGuid(info.getGuid());
+			doc.setRecognizeSource(info.getRecognizesource());
+			doc.setFieldOrder(info.getFieldorder());
+			doc.setCompanyName(info.getCompanyname());
+			doc.setCompanyPronounce(info.getCompanypronunce());
+			doc.setDepartment(info.getDepartment());
+			doc.setJobTitle(info.getJobtitle());
+			docs.add(doc);
+		}
+		return docs;
 	}
 
 	private void updateCategory(List<Category> categories) {
@@ -97,7 +388,7 @@ public class DataTransformApplication implements CommandLineRunner {
 			upd.set("displayOrder", category.getDisplayorder());
 			upd.set("contactCount", category.getContactcount());
 			upd.set("ownerGuid", category.getOwnerguid());
-			upd.set("updateTime", category.getUpdatetime());
+			upd.set("updateTime", category.getUpdatetime().toInstant());
 			upd.set("isDeleted", toBool(category.getIsdeleted()));
 			upd.set("secretaryAccountGuid", category.getSecretary_account_guid());
 			upd.set("inheritCategoryGuid", category.getInheritecategoryguid());
@@ -105,6 +396,7 @@ public class DataTransformApplication implements CommandLineRunner {
 			upd.set("isUsual", toBool(category.getIsusual()));
 			mongoTemplate.upsert(query, upd, CategoryDocument.class);
 		}
+		System.out.println("updateCategory finish....");
 	}
 
 	private void updateTokens(List<Token> tokens) throws Exception {
@@ -603,7 +895,7 @@ public class DataTransformApplication implements CommandLineRunner {
 		}
 	}
 
-	private void updateDevice(List<Device> devices) throws Exception {
+	private void updateDevice(List<Device> devices) {
 		final String sql = "INSERT INTO DEVICE VALUES (:GUID, :NAME, :PLATFORM) ON CONFLICT ON CONSTRAINT IDX_DEVICE_PRIMARY DO NOTHING";
 		List<SqlParameterSource> parameters = new ArrayList<>();
 		for(Device device : devices) {
@@ -654,6 +946,9 @@ public class DataTransformApplication implements CommandLineRunner {
 		}
 	}
 
+	private static Instant nonNullInstant(OffsetDateTime offsetDateTime) {
+		return (offsetDateTime == null) ? null : offsetDateTime.toInstant();
+	}
 	private static Boolean toBool(int intValue) {
 		return intValue == 1;
 	}

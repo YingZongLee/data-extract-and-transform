@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -16,17 +18,17 @@ public class Contactstatusforaccount {
     private Boolean isdeletedfromaccount;
     private String salesforceaccount;
     private String exporttosalesforceid;
-    private String previousModifiedTimeForSalesforceContact;
+    private OffsetDateTime previousModifiedTimeForSalesforceContact;
     private String exporttosalesforceleadid;
-    private String previousModifiedTimeForSalesforceLead;
+    private OffsetDateTime previousModifiedTimeForSalesforceLead;
     private String sugarcrmaccount;
     private String exporttosugarcrmid;
-    private String statusupdatetime;
-    private String modifyTimeForCrmSync;
+    private OffsetDateTime statusupdatetime;
+    private OffsetDateTime modifyTimeForCrmSync;
     private String exchangeaccount;
     private String exporttoexchangeid;
-    private String previousModifiedTimeForExchange;
-    private String modifyTimeForContactServerSync;
+    private OffsetDateTime previousModifiedTimeForExchange;
+    private OffsetDateTime modifyTimeForContactServerSync;
     private String office365account;
     private String exporttooffice365id;
     private String previousModifiedTimeForOffice365;

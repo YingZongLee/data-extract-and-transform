@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.OffsetDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -16,5 +18,5 @@ public class Contactsimpleinfo {
     private String company;
     private String department;
     private String jobtitle;
-    private String createtime;
+    private OffsetDateTime createtime;
 }

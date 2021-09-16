@@ -309,7 +309,6 @@ public class DataExtractApplication implements CommandLineRunner {
 			extResult.getCategories().add(category);
 		});
 
-		Files.write(exportJsonFile, gson.toJson(extResult).getBytes(StandardCharsets.UTF_8));
 
 		int queryLimit = 100;
 		int currentOffset = 0;
@@ -328,23 +327,23 @@ public class DataExtractApplication implements CommandLineRunner {
 								.guid(rs.getString("guid"))
 								.version(rs.getInt("version"))
 								.note(rs.getString("note"))
-								.birthday(rs.getString("birthday"))
+								.birthday(rs.getObject("birthday", OffsetDateTime.class))
 								.uniformnumber(rs.getString("uniformnumber"))
 								.nickname(rs.getString("nickname"))
 								.recoglanguagefront(rs.getString("recoglanguagefront"))
 								.recoglanguageback(rs.getString("recoglanguageback"))
-								.createtime(rs.getString("createtime"))
-								.modifytime(rs.getString("modifytime"))
+								.createtime(rs.getObject("createtime", OffsetDateTime.class))
+								.modifytime(rs.getObject("modifytime", OffsetDateTime.class))
 								.iscorrected(rs.getInt("iscorrected"))
 								.isdeleted(rs.getInt("isdeleted"))
 								.textsha1(rs.getString("textsha1"))
 								.ownerguid(rs.getString("ownerguid"))
 								.creatorguid(rs.getString("creatorguid"))
-								.modifytimefordisplay(rs.getString("modifytimefordisplay"))
+								.modifytimefordisplay(rs.getObject("modifytimefordisplay", OffsetDateTime.class))
 								.accountscanviewsha1(rs.getString("accountscanviewsha1"))
 								.editorguid(rs.getString("editorguid"))
-								.modifytimeforcrmsync(rs.getString("modifytimeforcrmsync"))
-								.modifytimeforcontactserversync(rs.getString("modifytimeforcontactserversync"))
+								.modifytimeforcrmsync(rs.getObject("modifytimeforcrmsync", OffsetDateTime.class))
+								.modifytimeforcontactserversync(rs.getObject("modifytimeforcontactserversync", OffsetDateTime.class))
 								.modifytimeforsearch(rs.getLong("modifytimeforsearch"))
 								.modifytimeinsearch(rs.getLong("modifytimeinsearch"))
 								.companyguid(rs.getString("companyguid"))
@@ -370,6 +369,9 @@ public class DataExtractApplication implements CommandLineRunner {
 			executeDetail(contacts);
 			Files.write(contactJsonPath, gson.toJson(contacts).getBytes(StandardCharsets.UTF_8));
 		}
+		extResult.setContactPage(contactJsonIndex+1);
+		Files.write(exportJsonFile, gson.toJson(extResult).getBytes(StandardCharsets.UTF_8));
+
 		System.out.println("directory: " + workingDir.toAbsolutePath());
 		System.out.println(configCompanyGuid + " finished.....");
 	}
@@ -482,7 +484,7 @@ public class DataExtractApplication implements CommandLineRunner {
 				contact.getContactdates().add(
 						Contactdate.builder()
 								.guid(rs.getString(1))
-								.datevalue(rs.getString(2))
+								.datevalue(rs.getObject(2, OffsetDateTime.class))
 								.datetype(rs.getString(3))
 								.fieldorder(rs.getInt(5))
 								.build()
@@ -496,7 +498,7 @@ public class DataExtractApplication implements CommandLineRunner {
 						.build();
 				CustomFieldContactAttribute fieldType = CustomFieldContactAttribute.valueOf(custom.getFieldtype());
 				if(fieldType.equals(CustomFieldContactAttribute.DATE) || fieldType.equals(CustomFieldContactAttribute.DATE_TIME)) {
-					custom.setDatetimevalue(rs.getString(8));
+					custom.setDatetimevalue(rs.getObject(8, OffsetDateTime.class));
 				}
 				if(fieldType.equals(CustomFieldContactAttribute.EMAIL)
 						|| fieldType.equals(CustomFieldContactAttribute.PICKLIST)
@@ -527,8 +529,8 @@ public class DataExtractApplication implements CommandLineRunner {
 					Contactimage image = Contactimage.builder()
 							.guid(guid)
 							.imagetype(stringTypeOf)
-							.createtime(rs.getString(4))
-							.updatetime(rs.getString(5))
+							.createtime(rs.getObject(4, OffsetDateTime.class))
+							.updatetime(rs.getObject(5, OffsetDateTime.class))
 							.sha1(rs.getString(6))
 							.isdeleted(rs.getBoolean(9))
 							.build();
@@ -554,7 +556,7 @@ public class DataExtractApplication implements CommandLineRunner {
 								.company(rs.getString(3))
 								.department(rs.getString(4))
 								.jobtitle(rs.getString(5))
-								.createtime(rs.getString(6))
+								.createtime(rs.getObject(6, OffsetDateTime.class))
 								.fullnameeastfirstwestfirst(rs.getString(8))
 								.fullnameeastfirstwestlast(rs.getString(9))
 								.fullnameeastlastwestfirst(rs.getString(10))
@@ -569,7 +571,7 @@ public class DataExtractApplication implements CommandLineRunner {
 									.categorysha1(rs.getString(2))
 									.categoryguids(rs.getString(3))
 									.isdeletedfromaccount(rs.getBoolean(4))
-									.statusupdatetime(rs.getString(5))
+									.statusupdatetime(rs.getObject(5, OffsetDateTime.class))
 									.contactguid(rs.getString(6))
 									.accountguid(rs.getString(7))
 									.exporttosalesforceid(rs.getString(8))
@@ -577,13 +579,13 @@ public class DataExtractApplication implements CommandLineRunner {
 									.salesforceaccount(rs.getString(10))
 									.sugarcrmaccount(rs.getString(11))
 									.exporttosalesforceleadid(rs.getString(12))
-									.modifyTimeForCrmSync(rs.getString(13))
-									.previousModifiedTimeForSalesforceContact(rs.getString(14))
-									.previousModifiedTimeForSalesforceLead(rs.getString(15))
+									.modifyTimeForCrmSync(rs.getObject(13, OffsetDateTime.class))
+									.previousModifiedTimeForSalesforceContact(rs.getObject(14, OffsetDateTime.class))
+									.previousModifiedTimeForSalesforceLead(rs.getObject(15, OffsetDateTime.class))
 									.exchangeaccount(rs.getString(16))
 									.exporttoexchangeid(rs.getString(17))
-									.previousModifiedTimeForExchange(rs.getString(18))
-									.modifyTimeForContactServerSync(rs.getString(19))
+									.previousModifiedTimeForExchange(rs.getObject(18, OffsetDateTime.class))
+									.modifyTimeForContactServerSync(rs.getObject(19, OffsetDateTime.class))
 									.office365account(rs.getString(20))
 									.exporttooffice365id(rs.getString(21))
 									.previousModifiedTimeForOffice365(rs.getString(22))

@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
@@ -19,21 +19,21 @@ public class ContactStatusForAccountDocument extends BaseIdDocument {
     private Boolean isDeletedFromAccount;
     private String categories;
     private String categorySha1;
-    private OffsetDateTime modifyTimeForCrmSync;
+    private Instant modifyTimeForCrmSync;
     private String salesforceAccount;
     private String exportToSFContactId;
-    private OffsetDateTime previousModifiedTimeForSFContact;
+    private Instant previousModifiedTimeForSFContact;
     private String exportToSFLeadId;
-    private OffsetDateTime previousModifiedTimeForSFLead;
+    private Instant previousModifiedTimeForSFLead;
     private String sugarCrmAccount;
     private String exportToSugarCrmId;
-    private OffsetDateTime modifyTimeForContactServerSync;
+    private Instant modifyTimeForContactServerSync;
     private String exchangeAccount;
     private String exportToExchangeId;
-    private OffsetDateTime previousModifiedTimeForExchange;
+    private Instant previousModifiedTimeForExchange;
     private String office365Account;
     private String exportToOffice365Id;
-    private OffsetDateTime previousModifiedTimeForOffice365;
-    private OffsetDateTime statusUpdateTime;
+    private Instant previousModifiedTimeForOffice365;
+    private Instant statusUpdateTime;
     private String crmExportFailedReason;
 }

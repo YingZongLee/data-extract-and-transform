@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
@@ -21,5 +21,5 @@ public class ContactSimpleInfo extends BaseIdDocument {
     private String company;
     private String department;
     private String jobTitle;
-    private OffsetDateTime createTime;
+    private Instant createTime;
 }

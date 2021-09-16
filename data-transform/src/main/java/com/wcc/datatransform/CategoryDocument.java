@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @EqualsAndHashCode(callSuper = true)
 @Document(collection = "category")
@@ -17,7 +17,7 @@ public class CategoryDocument extends BaseIdDocument {
     private Integer displayOrder;
     private Integer contactCount;
     private String ownerGuid;
-    private OffsetDateTime updateTime;
+    private Instant updateTime;
     private Boolean isDeleted;
     private String secretaryAccountGuid;
     private String inheritCategoryGuid;

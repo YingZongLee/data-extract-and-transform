@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -12,6 +14,6 @@ import lombok.NoArgsConstructor;
 public class Contactdate {
     private String guid;
     private String datetype;
-    private String datevalue;
+    private OffsetDateTime datevalue;
     private Integer fieldorder;
 }

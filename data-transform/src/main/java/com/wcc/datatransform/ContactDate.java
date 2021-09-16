@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
@@ -15,5 +15,5 @@ import java.time.OffsetDateTime;
 @Data
 public class ContactDate extends BaseOrderDocument {
     private String dateType;
-    private OffsetDateTime dateValue;
+    private Instant dateValue;
 }

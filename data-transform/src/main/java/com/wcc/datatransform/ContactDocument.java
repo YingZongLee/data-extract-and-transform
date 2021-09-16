@@ -7,7 +7,7 @@ import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @NoArgsConstructor
@@ -18,7 +18,7 @@ import java.util.List;
 public class ContactDocument extends BaseIdDocument {
     @Version
     private Long version;
-    private OffsetDateTime birthday;
+    private Instant birthday;
     private String nickname;
     private String note;
     private String uniformNumber;
@@ -33,11 +33,11 @@ public class ContactDocument extends BaseIdDocument {
     private Boolean isDeleted;
     private Boolean isVertify;
     private Boolean isUnCategory;
-    private OffsetDateTime createTime;
-    private OffsetDateTime modifyTime;
-    private OffsetDateTime modifyTimeForDisplay;
-    private OffsetDateTime modifyTimeForCrmSync;
-    private OffsetDateTime modifyTimeForContactServerSync;
+    private Instant createTime;
+    private Instant modifyTime;
+    private Instant modifyTimeForDisplay;
+    private Instant modifyTimeForCrmSync;
+    private Instant modifyTimeForContactServerSync;
     private Double modifyTimeForSearch;
     private Double modifyTimeInSearch;
     private String accountsCanViewSha1;
@@ -45,7 +45,6 @@ public class ContactDocument extends BaseIdDocument {
     private List<ContactJobInfo> jobInfos;
     private String fullText;
     private ContactSimpleInfo simpleInfo;
-    private List<String> activities;
     private List<String> categories;
     private List<ContactName> names;
     private List<ContactAddress> addresses;

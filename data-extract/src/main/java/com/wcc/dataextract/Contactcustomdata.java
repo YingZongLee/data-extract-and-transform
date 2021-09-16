@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -16,7 +18,7 @@ public class Contactcustomdata {
     private String textvalue;
     private Long intvalue;
     private Double floatvalue;
-    private String datetimevalue;
+    private OffsetDateTime datetimevalue;
 }
 
 enum CustomFieldContactAttribute {
